@@ -159,6 +159,7 @@ class APK(object):
         self.package = ""
         self.androidversion = {}
         self.permissions = []
+        self.customPermissions = []
         self.valid_apk = False
 
         self.files = {}
@@ -197,6 +198,15 @@ class APK(object):
 
                     for item in self.xml[i].getElementsByTagName('uses-permission'):
                         self.permissions.append(str(item.getAttributeNS(NS_ANDROID_URI, "name")))
+
+                    for item in self.xml[i].getElementsByTagName('permission'):
+                        customPermission = str(item.getAttribute("android:name"))
+                        if item.getAttribute("android:protectionLevel") is not None:
+                            customPermission += ":::" + str(int(item.getAttribute("android:protectionLevel"),0))
+                        else:
+                            customPermission += ":::" + "0"
+
+                        self.customPermissions.append(customPermission)
 
                     self.valid_apk = True
 
@@ -1814,3 +1824,5 @@ def get_arsc_info(arscobj):
                 except AttributeError:
                     pass
     return buff
+
+
